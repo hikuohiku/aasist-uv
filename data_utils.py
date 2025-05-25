@@ -1,6 +1,5 @@
 import numpy as np
 import soundfile as sf
-import torch
 from torch import Tensor
 from torch.utils.data import Dataset
 
@@ -9,7 +8,6 @@ __email__ = "tak@eurecom.fr, jeeweon.jung@navercorp.com"
 
 
 def genSpoof_list(dir_meta, is_train=False, is_eval=False):
-
     d_meta = {}
     file_list = []
     with open(dir_meta, "r") as f:
@@ -25,7 +23,7 @@ def genSpoof_list(dir_meta, is_train=False, is_eval=False):
     elif is_eval:
         for line in l_meta:
             _, key, _, _, _ = line.strip().split(" ")
-            #key = line.strip()
+            # key = line.strip()
             file_list.append(key)
         return file_list
     else:
@@ -51,7 +49,7 @@ def pad_random(x: np.ndarray, max_len: int = 64600):
     # if duration is already long enough
     if x_len >= max_len:
         stt = np.random.randint(x_len - max_len)
-        return x[stt:stt + max_len]
+        return x[stt : stt + max_len]
 
     # if too short
     num_repeats = int(max_len / x_len) + 1
@@ -62,7 +60,7 @@ def pad_random(x: np.ndarray, max_len: int = 64600):
 class Dataset_ASVspoof2019_train(Dataset):
     def __init__(self, list_IDs, labels, base_dir):
         """self.list_IDs	: list of strings (each string: utt key),
-           self.labels      : dictionary (key: utt key, value: label integer)"""
+        self.labels      : dictionary (key: utt key, value: label integer)"""
         self.list_IDs = list_IDs
         self.labels = labels
         self.base_dir = base_dir
@@ -82,8 +80,7 @@ class Dataset_ASVspoof2019_train(Dataset):
 
 class Dataset_ASVspoof2019_devNeval(Dataset):
     def __init__(self, list_IDs, base_dir):
-        """self.list_IDs	: list of strings (each string: utt key),
-        """
+        """self.list_IDs	: list of strings (each string: utt key),"""
         self.list_IDs = list_IDs
         self.base_dir = base_dir
         self.cut = 64600  # take ~4 sec audio (64600 samples)
