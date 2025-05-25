@@ -19,6 +19,7 @@ from typing import Dict, List, Union
 
 import torch
 import torch.nn as nn
+import wandb
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchcontrib.optim import SWA
@@ -117,6 +118,8 @@ def main(args: argparse.Namespace) -> None:
         )
         sys.exit(0)
 
+    wandb_run = wandb.init(project="aasist", config=config)
+
     # get optimizer and scheduler
     optim_config["steps_per_epoch"] = len(trn_loader)
     optimizer, scheduler = create_optimizer(model.parameters(), optim_config)
@@ -157,6 +160,14 @@ def main(args: argparse.Namespace) -> None:
         writer.add_scalar("loss", running_loss, epoch)
         writer.add_scalar("dev_eer", dev_eer, epoch)
         writer.add_scalar("dev_tdcf", dev_tdcf, epoch)
+        wandb_run.log(
+            {
+                "epoch": epoch,
+                "loss": running_loss,
+                "dev_eer": dev_eer,
+                "dev_tdcf": dev_tdcf,
+            }
+        )
 
         best_dev_tdcf = min(dev_tdcf, best_dev_tdcf)
         if best_dev_eer >= dev_eer:
