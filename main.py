@@ -19,11 +19,12 @@ from typing import Dict, List, Union
 
 import torch
 import torch.nn as nn
-import wandb
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchcontrib.optim import SWA
+from tqdm import tqdm
 
+import wandb
 from data_utils import (
     Dataset_ASVspoof2019_devNeval,
     Dataset_ASVspoof2019_train,
@@ -40,6 +41,7 @@ def main(args: argparse.Namespace) -> None:
     Main function.
     Trains, validates, and evaluates the ASVspoof detection model.
     """
+
     # load experiment configurations
     with open(args.config, "r") as f_json:
         config = json.loads(f_json.read())
@@ -369,7 +371,7 @@ def train_epoch(
     # set objective (Loss) functions
     weight = torch.FloatTensor([0.1, 0.9]).to(device)
     criterion = nn.CrossEntropyLoss(weight=weight)
-    for batch_x, batch_y in trn_loader:
+    for batch_x, batch_y in tqdm(trn_loader):
         batch_size = batch_x.size(0)
         num_total += batch_size
         ii += 1
